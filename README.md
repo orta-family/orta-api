@@ -2,19 +2,27 @@
 
 An API for Orta things.
 
-## Setup
+## Dev Setup
 
 Set the following environment variables
 
-## Running the app
+```
+export OA_PG_USER=user
+export OA_PG_PASS=password
+```
+
+It may be useful to add them to your login shell profile file,
+such as `~/.profile`
+
 
 Start postgres
 
 ```
 docker container run \
 --name container-name \
--e POSTGRES_USER=user \
--e POSTGRES_PASSWORD=password \
+-e POSTGRES_USER=$OA_PG_USER \
+-e POSTGRES_PASSWORD=$OA_PG_PASS \
 -d postgres
 ```
+
 
