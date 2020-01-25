@@ -2,9 +2,15 @@
   "name": "orta-api",
   "version": "1.0.0",
   "description": "An API for Orta things",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/server",
+    "clean": "rm -rf dist",
+    "build": "npm -s run clean && npm -s run generate && tsc",
+    "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
+    "generate:prisma": "prisma2 generate",
+    "generate:nexus": "ts-node --transpile-only src/schema",
+    "postinstall": "npm -s run generate",
+    "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/server"
   },
   "repository": {
     "type": "git",
@@ -17,9 +23,16 @@
   },
   "homepage": "https://github.com/orta-family/orta-api#readme",
   "devDependencies": {
-    "prisma2": "^2.0.0-preview020.3"
+    "prisma2": "^2.0.0-preview020.3",
+    "ts-node": "^8.6.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@prisma/client": "^2.0.0-preview020.3"
+    "@prisma/client": "^2.0.0-preview020.3",
+    "graphql": "^14.5.8",
+    "graphql-yoga": "^1.18.3",
+    "nexus": "^0.12.0-rc.9",
+    "nexus-prisma": "^0.7.0-next.2"
   }
 }
