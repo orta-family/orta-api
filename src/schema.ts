@@ -13,9 +13,8 @@ const Member = objectType({
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.crud.member({
-      alias: 'Member',
-    })
+    t.crud.member({ alias: 'Member' })
+    t.crud.members()
   },
 })
 

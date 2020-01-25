@@ -64,6 +64,7 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     Member: NexusGenRootTypes['Member'] | null; // Member
+    members: NexusGenRootTypes['Member'][]; // [Member!]!
   }
 }
 
@@ -76,6 +77,13 @@ export interface NexusGenArgTypes {
   Query: {
     Member: { // args
       where: NexusGenInputs['MemberWhereUniqueInput']; // MemberWhereUniqueInput!
+    }
+    members: { // args
+      after?: number | null; // Int
+      before?: number | null; // Int
+      first?: number | null; // Int
+      last?: number | null; // Int
+      skip?: number | null; // Int
     }
   }
 }

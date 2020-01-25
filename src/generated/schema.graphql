@@ -29,4 +29,5 @@ type Mutation {
 
 type Query {
   Member(where: MemberWhereUniqueInput!): Member
+  members(after: Int, before: Int, first: Int, last: Int, skip: Int): [Member!]!
 }
