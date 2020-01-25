@@ -20,26 +20,16 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  membersCreateInput: { // input type
-    created_at?: any | null; // DateTime
-    member_id: number; // Int!
-    modified_at?: any | null; // DateTime
-    name: string; // String!
-    userses?: NexusGenInputs['usersCreateManyWithoutMember_idInput'] | null; // usersCreateManyWithoutMember_idInput
-  }
-  usersCreateManyWithoutMember_idInput: { // input type
-    connect?: NexusGenInputs['usersWhereUniqueInput'][] | null; // [usersWhereUniqueInput!]
-    create?: NexusGenInputs['usersCreateWithoutMember_idInput'][] | null; // [usersCreateWithoutMember_idInput!]
-  }
-  usersCreateWithoutMember_idInput: { // input type
-    created_at?: any | null; // DateTime
-    email: string; // String!
-    modified_at?: any | null; // DateTime
-    user_id: number; // Int!
-  }
-  usersWhereUniqueInput: { // input type
+  MemberCreateInput: { // input type
+    created_at: any; // DateTime!
     email?: string | null; // String
-    user_id?: number | null; // Int
+    member_id: number; // Int!
+    modified_at: any; // DateTime!
+    name: string; // String!
+  }
+  MemberWhereUniqueInput: { // input type
+    email?: string | null; // String
+    member_id?: number | null; // Int
   }
 }
 
@@ -47,9 +37,9 @@ export interface NexusGenEnums {
 }
 
 export interface NexusGenRootTypes {
+  Member: prisma.Member;
   Mutation: {};
   Query: {};
-  members: prisma.members;
   String: string;
   Int: number;
   Float: number;
@@ -59,38 +49,33 @@ export interface NexusGenRootTypes {
 }
 
 export interface NexusGenAllTypes extends NexusGenRootTypes {
-  membersCreateInput: NexusGenInputs['membersCreateInput'];
-  usersCreateManyWithoutMember_idInput: NexusGenInputs['usersCreateManyWithoutMember_idInput'];
-  usersCreateWithoutMember_idInput: NexusGenInputs['usersCreateWithoutMember_idInput'];
-  usersWhereUniqueInput: NexusGenInputs['usersWhereUniqueInput'];
+  MemberCreateInput: NexusGenInputs['MemberCreateInput'];
+  MemberWhereUniqueInput: NexusGenInputs['MemberWhereUniqueInput'];
 }
 
 export interface NexusGenFieldTypes {
-  Mutation: { // field return type
-    signupMember: NexusGenRootTypes['members']; // members!
-  }
-  Query: { // field return type
-    members: NexusGenRootTypes['members'][]; // [members!]!
-  }
-  members: { // field return type
+  Member: { // field return type
+    email: string | null; // String
     member_id: number; // Int!
     name: string; // String!
+  }
+  Mutation: { // field return type
+    signupMember: NexusGenRootTypes['Member']; // Member!
+  }
+  Query: { // field return type
+    Member: NexusGenRootTypes['Member'] | null; // Member
   }
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
     signupMember: { // args
-      data: NexusGenInputs['membersCreateInput']; // membersCreateInput!
+      data: NexusGenInputs['MemberCreateInput']; // MemberCreateInput!
     }
   }
   Query: {
-    members: { // args
-      after?: number | null; // Int
-      before?: number | null; // Int
-      first?: number | null; // Int
-      last?: number | null; // Int
-      skip?: number | null; // Int
+    Member: { // args
+      where: NexusGenInputs['MemberWhereUniqueInput']; // MemberWhereUniqueInput!
     }
   }
 }
@@ -100,9 +85,9 @@ export interface NexusGenAbstractResolveReturnTypes {
 
 export interface NexusGenInheritedFields {}
 
-export type NexusGenObjectNames = "Mutation" | "Query" | "members";
+export type NexusGenObjectNames = "Member" | "Mutation" | "Query";
 
-export type NexusGenInputNames = "membersCreateInput" | "usersCreateManyWithoutMember_idInput" | "usersCreateWithoutMember_idInput" | "usersWhereUniqueInput";
+export type NexusGenInputNames = "MemberCreateInput" | "MemberWhereUniqueInput";
 
 export type NexusGenEnumNames = never;
 

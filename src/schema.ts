@@ -1,19 +1,20 @@
 import { nexusPrismaPlugin } from 'nexus-prisma'
-import { idArg, makeSchema, objectType, stringArg } from 'nexus'
+import { makeSchema, objectType } from 'nexus'
 
 const Member = objectType({
-  name: 'members',
+  name: 'Member',
   definition(t) {
     t.model.member_id()
     t.model.name()
+    t.model.email()
   },
 })
 
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.crud.members({
-      alias: 'members',
+    t.crud.member({
+      alias: 'Member',
     })
   },
 })
@@ -21,7 +22,7 @@ const Query = objectType({
 const Mutation = objectType({
   name: 'Mutation',
   definition(t) {
-    t.crud.createOnemembers({ alias: 'signupMember' })
+    t.crud.createOneMember({ alias: 'signupMember' })
   },
 })
 

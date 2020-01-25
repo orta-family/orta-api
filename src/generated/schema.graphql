@@ -4,40 +4,29 @@
 
 scalar DateTime
 
-type members {
+type Member {
+  email: String
   member_id: Int!
   name: String!
 }
 
-input membersCreateInput {
-  created_at: DateTime
+input MemberCreateInput {
+  created_at: DateTime!
+  email: String
   member_id: Int!
-  modified_at: DateTime
+  modified_at: DateTime!
   name: String!
-  userses: usersCreateManyWithoutMember_idInput
+}
+
+input MemberWhereUniqueInput {
+  email: String
+  member_id: Int
 }
 
 type Mutation {
-  signupMember(data: membersCreateInput!): members!
+  signupMember(data: MemberCreateInput!): Member!
 }
 
 type Query {
-  members(after: Int, before: Int, first: Int, last: Int, skip: Int): [members!]!
-}
-
-input usersCreateManyWithoutMember_idInput {
-  connect: [usersWhereUniqueInput!]
-  create: [usersCreateWithoutMember_idInput!]
-}
-
-input usersCreateWithoutMember_idInput {
-  created_at: DateTime
-  email: String!
-  modified_at: DateTime
-  user_id: Int!
-}
-
-input usersWhereUniqueInput {
-  email: String
-  user_id: Int
+  Member(where: MemberWhereUniqueInput!): Member
 }
