@@ -2,6 +2,8 @@
 
 An API for Orta things.
 
+Based partially on [Graphile Starter](https://github.com/graphile/starter)
+
 ## Dev Setup
 
 Set the following environment variables
