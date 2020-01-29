@@ -1,0 +1,30 @@
+{
+  "name": "orta-api",
+  "version": "0.1.0",
+  "description": "An API for Orta things.",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/server",
+    "start:dev": "tsc-watch --onSuccess \"node dist/server\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orta-family/orta-api.git"
+  },
+  "keywords": [],
+  "author": "Sophie Orta",
+  "bugs": {
+    "url": "https://github.com/orta-family/orta-api/issues"
+  },
+  "homepage": "https://github.com/orta-family/orta-api#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "typescript": "^3.7.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.2",
+    "tsc-watch": "^4.1.0"
+  }
+}

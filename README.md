@@ -12,7 +12,7 @@ export OA_PG_PASS=password
 export OA_PG_HOST=localhost
 export OA_PG_PORT=5432
 export OA_DB_NAME=dbname
-export OA_PG_URL=postgres://$OA_PG_USER:$OA_PG_PASS@OA_PG_HOST:OA_PG_PORT/$OA_DB_NAME
+export OA_PG_URL=postgres://$OA_PG_USER:$OA_PG_PASS@$OA_PG_HOST:$OA_PG_PORT/$OA_DB_NAME
 ```
 
 It may be useful to add them to your login shell profile file,
