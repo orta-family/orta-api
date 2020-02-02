@@ -29,3 +29,5 @@ docker container run \
 -p $OA_PG_PORT:$OA_PG_PORT
 -d postgres
 ```
+
+Add extension pgcrypto to DB? I might try to find a better way to do this.
