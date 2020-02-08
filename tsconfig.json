@@ -1,14 +1,21 @@
 {
   "compilerOptions": {
+    "outDir": "build",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false,
     "module": "commonjs",
     "target": "es2017",
-    "moduleResolution": "node",
-    "declaration": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "strict": true,
-    "experimentalDecorators": true
+    "rootDir": "src",
+    "lib": [
+      "es2017",
+      "dom"
+    ]
   },
-  "include": ["./app"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts"
+  ]
 }
