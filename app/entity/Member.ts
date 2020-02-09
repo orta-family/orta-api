@@ -1,11 +1,8 @@
 import { Entity, Column } from 'typeorm';
-import { Base } from './Base'
+import { Slug } from './Slug'
 
 @Entity()
-export class Member extends Base {
-
-    @Column()
-    name!: string;
+export class Member extends Slug {
 
     @Column({ type: 'date', nullable: true })
     birthdate!: Date;

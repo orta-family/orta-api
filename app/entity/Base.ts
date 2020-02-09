@@ -2,17 +2,17 @@ import { BaseEntity, BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeor
 
 export abstract class Base extends BaseEntity {
 
-    @PrimaryGeneratedColumn('uuid')
-    id!: string;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt!: Date;
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt!: Date;
 
-    @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-    updatedAt!: Date;
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  updatedAt!: Date;
 
-    @BeforeUpdate()
-    public setUpdateDate(): void {
-      this.updatedAt = new Date();
-    }
+  @BeforeUpdate()
+  public setUpdateDate(): void {
+    this.updatedAt = new Date();
+  }
 }
