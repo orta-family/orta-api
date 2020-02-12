@@ -1,19 +1,28 @@
 import { PORT } from './config';
 import 'reflect-metadata';
-import chalk from 'chalk';
 import express from 'express';
+import * as bodyParser from 'body-parser';
+import { createConnection } from "typeorm";
+import chalk from 'chalk';
+
+import indexRouter from './routes/index';
 
 async function main() {
-  console.log('Starting Orta API...');
+  console.log('Starting Orta API');
+
+  console.log('Creating connection to db...');
+  const connection = await createConnection();
+  console.log(chalk.green('Success!'));
+
+  console.log('Creating express app');
   const app = express();  
 
-  app.use(express.json());
+  console.log('Setting up middleware');
+  app.use(bodyParser.json());
 
-  app.get('/', (req, res) => res.json({ message: 'Test' }));
-
-  app.get('/members', (req, res) => res.json({ message: 'Test' }));
-
-  app.use((req, res) => res.status(404).json({ message: 'This is not a valid endpoint' }));
+  console.log('Setting up routes');
+  app.use('/', indexRouter);
+  console.log(chalk.green('Success!'));
 
   app.listen(PORT, () => {
     console.log(chalk.green(
