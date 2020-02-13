@@ -35,4 +35,6 @@ main().catch(e => {
   console.error("Fatal error occurred starting server!");
   console.error(e);
   process.exit(101);
+}).finally(() => {
+  console.log(chalk.blue('What is this?'));
 });

@@ -1,7 +1,8 @@
 import express from 'express';
+import membersRouter from './members';
 
 const router = express.Router();
 
-router.get('/', (req, res) => res.json({ message: 'Rest API' }));
+router.use('/members', membersRouter);
 
 export default router;

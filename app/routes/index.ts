@@ -1,9 +1,7 @@
 import express from 'express';
-import restRouter from './rest';
+import restRouter from './rest/index';
 
 const router = express.Router();
-
-router.get('/', (req, res) => res.json({ message: 'Test' }));
 
 router.use('/rest', restRouter);
 

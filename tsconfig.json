@@ -9,7 +9,11 @@
     "strict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["es6"]
+    "lib": ["es6"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["app/*"]
+    }
   },
   "include": ["./app"],
   "exclude": ["node_modules"]
