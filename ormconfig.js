@@ -19,13 +19,13 @@ module.exports = {
   "synchronize": false,
   "logging": "all",
   "entities": [
-     "app/entity/**/*.ts"
+     "dist/entity/**/*.js"
   ],
   "migrations": [
-     "app/migration/**/*.ts"
+     "dist/migration/**/*.js"
   ],
   "subscribers": [
-     "app/subscriber/**/*.ts"
+     "dist/subscriber/**/*.js"
   ],
   "cli": {
      "entitiesDir": "app/entity",

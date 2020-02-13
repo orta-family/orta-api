@@ -5,10 +5,10 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/server",
-    "start:tmp": "ts-node src/index.ts",
+    "start": "tsc && node dist/server",
     "start:dev": "tsc-watch --onSuccess \"node dist/server\"",
-    "orm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "orm": "tsc && typeorm",
+    "orm:ts": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "repository": {
     "type": "git",
