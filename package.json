@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc && node dist/server",
-    "start:dev": "tsc-watch --onSuccess \"node dist/server\"",
+    "dev": "tsc-watch --onSuccess \"node dist/server\"",
     "orm": "tsc && typeorm",
     "orm:ts": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "postinstall": "link-module-alias"

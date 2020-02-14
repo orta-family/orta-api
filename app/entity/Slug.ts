@@ -17,9 +17,9 @@ export abstract class Slug extends Base {
       this.slug = slugify(this.name);
     }
 
-    static findBySlug(slug: string) {
-      return this.createQueryBuilder('s')
-        .where('s.slug = :slug', { slug })
+    static findBySlug(slug: string, alias: string = 'slugable') {
+      return this.createQueryBuilder(alias)
+        .where(`${alias}.slug = :slug`, { slug })
         .getOne();
     }
 }
