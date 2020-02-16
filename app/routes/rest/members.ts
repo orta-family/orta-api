@@ -5,12 +5,12 @@ import { Member } from '~/entity/Member';
 
 const router = express.Router();
 
-router.get('/', async function(req: Request, res: Response) {
+router.get('/', async (req: Request, res: Response) => {
   const members = await Member.find();
   return res.json(members);
 });
 
-router.get('/:idOrSlug', async function(req: Request, res: Response) {
+router.get('/:idOrSlug', async (req: Request, res: Response) => {
   const { idOrSlug } = req.params;
   let members;
   if (isNaN(+idOrSlug)) {
@@ -21,7 +21,7 @@ router.get('/:idOrSlug', async function(req: Request, res: Response) {
   return res.json(members);
 });
 
-router.post('/', async function(req: Request, res: Response) {
+router.post('/', async (req: Request, res: Response) => {
   const member = Member.create(req.body);
   const errors = await validate(member);
   return res.json({ message: 'Test', member, errors})

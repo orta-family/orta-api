@@ -1,11 +1,11 @@
 import { PORT } from './config';
 import 'reflect-metadata';
-import express from 'express';
-import * as bodyParser from 'body-parser';
-import { createConnection } from "typeorm";
+import { createConnection } from 'typeorm';
 import chalk from 'chalk';
+import * as http from 'http';
 
-import indexRouter from './routes/index';
+import { createApp } from './app';
+
 
 async function main() {
   console.log('Starting Orta API');
@@ -14,27 +14,20 @@ async function main() {
   const connection = await createConnection();
   console.log(chalk.green('Success!'));
 
-  console.log('Creating express app');
-  const app = express();  
+  const app = createApp();
+  app.set('port', PORT);
 
-  console.log('Setting up middleware');
-  app.use(bodyParser.json());
+  const server = http.createServer(app);
 
-  console.log('Setting up routes');
-  app.use('/', indexRouter);
-  console.log(chalk.green('Success!'));
+  server.listen(PORT);
 
-  app.listen(PORT, () => {
-    console.log(chalk.green(
-      `${chalk.bold('Orta API')} listening on ${chalk.underline(`http://localhost:${PORT}`)}`
-    ));
-  });
+  console.log(chalk.green(
+    `${chalk.bold('Orta API')} listening on ${chalk.underline(`http://localhost:${PORT}`)}`
+  ));
 };
 
 main().catch(e => {
-  console.error("Fatal error occurred starting server!");
+  console.error(chalk.red('Fatal error occurred starting server!'));
   console.error(e);
-  process.exit(101);
-}).finally(() => {
-  console.log(chalk.blue('What is this?'));
+  process.exit(1);
 });
