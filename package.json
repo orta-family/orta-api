@@ -5,9 +5,15 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint ./app/ --ext .ts",
     "start": "tsc && node dist/server",
-    "dev": "tsc-watch --onSuccess \"node dist/server\"",
+    "clean": "rm -rf ./node_modules && rm -rf ./dist",
+    "dev:db:init": "docker-compose up -d && npm run orm migration:run",
+    "dev:db:start": "docker-compose start",
+    "dev:db:stop": "docker-compose stop",
+    "dev:db:clean": "docker-compose down",
+    "dev:init": "cp ./.env.example ./.env && mkdir -p dist && npm ci && npm run dev:db:init",
+    "dev": "npm run dev:db:start && trap 'echo;echo; echo Shutting down' INT && tsc-watch --noClear --onSuccess \"node dist/server\"; npm run dev:db:stop",
+    "lint": "eslint ./app/ --ext .ts",
     "orm": "tsc && typeorm",
     "orm:ts": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "postinstall": "link-module-alias"
@@ -48,7 +54,6 @@
     "eslint": "^6.8.0",
     "ts-node": "3.3.0",
     "tsc-watch": "^4.1.0",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "3.3.3333"
+    "tsconfig-paths": "^3.9.0"
   }
 }
