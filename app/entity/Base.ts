@@ -1,6 +1,8 @@
 import { BaseEntity, BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-export abstract class Base extends BaseEntity {
+const attributes = ['createdAt', 'updatedAt'];
+
+abstract class Base extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id!: number;
@@ -16,3 +18,5 @@ export abstract class Base extends BaseEntity {
     this.updatedAt = new Date();
   }
 }
+
+export { Base, attributes };

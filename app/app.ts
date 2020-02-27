@@ -1,8 +1,8 @@
-import express, { Application } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
-import chalk from 'chalk';
 
 import indexRouter from './routes/index';
+import errorRequestHandler from './error';
 
 export function createApp() : Application {
   console.log('Creating express app');
@@ -14,11 +14,7 @@ export function createApp() : Application {
   console.log('Setting up routes');
   app.use('/', indexRouter);
 
+  app.use(errorRequestHandler);
+
   return app;
 }
-
-// app.listen(PORT, () => {
-//   console.log(chalk.green(
-//     `${chalk.bold('Orta API')} listening on ${chalk.underline(`http://localhost:${PORT}`)}`
-//   ));
-// });

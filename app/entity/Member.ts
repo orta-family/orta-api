@@ -1,10 +1,13 @@
 import { Entity, Column } from 'typeorm';
-import { Slug } from './Slug'
+import { Slug, attributes as slugAttributes } from './Slug'
 
+const attributes = [...slugAttributes, 'birthdate'];
 @Entity()
-export class Member extends Slug {
+class Member extends Slug {
 
     @Column({ type: 'date', nullable: true })
     birthdate!: Date;
 
 }
+
+export { Member, attributes };
