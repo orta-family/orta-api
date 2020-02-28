@@ -1,68 +1,58 @@
 import { ENV } from './config';
 import { ErrorRequestHandler } from "express";
-import chalk from 'chalk';
 
-const isDev = ENV === "development";
+const isDev = ENV === 'development';
 
-interface ParsedError {
-  message: String;
+interface ApiError {
   status: number;
-  detail: any;
+  title: string;
+  detail?: string;
+  expose: boolean;
+  source?: any;
 }
 
-interface OrtaError {
-  message: string;
-  status: string;
-  detail: any;
+interface PublicApiError {
+  status: number;
+  title: string;
+  detail?: string;
+  source?: any;
 }
 
-function parseError(error: OrtaError): ParsedError {
-  /*
-   * Because an error may contain confidential information or information that
-   * might help attackers, by default we don't output the error message at all.
-   * You should override this for specific classes of errors below.
-   */
+export class ValidationApiError implements ApiError {
+  status: number = 400;
+  title: string = 'Validation Error';
+  expose: boolean = true;
 
-  const { status: code, detail } = error;
-  const codeAsFloat = parseInt(code, 10);
-  const httpCode =
-    isFinite(codeAsFloat) && codeAsFloat >= 400 && codeAsFloat < 600
-      ? codeAsFloat
-      : 500;
+  constructor(public source: any) {
+    this.source = source;
+  }
+}
 
-  const result = {
-    message: "An unknown error occurred",
-    status: httpCode,
-    detail,
-  };
+class GenericApiError implements PublicApiError {
+  status: number = 500;
+  title: string = 'Server Error';
+  detail: string = 'An unknown error has ocurred'
+}
 
-  if (isDev) {
-    console.error('ERROR: ', result);
+function parseError(error: ApiError): PublicApiError {
+  if (isDev || error.expose) {
+    const { status, title, detail, source } = error;
+    return { status, title, detail, source };
   }
 
-  return result;
+  return new GenericApiError();
 }
 
 const errorRequestHandler: ErrorRequestHandler = (error, _req, res, next) => {
   try {
     const parsedError = parseError(error);
-    const errorMessageString = `ERROR: ${parsedError.message}`;
-
-    if (res.headersSent) {
-      console.error(errorMessageString);
-      res.end();
-      return;
-    }
 
     res.status(parsedError.status);
 
     res.format({
-      "text/plain": function() {
-        res.send(errorMessageString);
-      },
 
       "application/json": function() {
-        res.send({ errors: [{ message: errorMessageString }] });
+        res.send({ errors: [parsedError] });
       },
 
       default: function() {

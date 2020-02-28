@@ -1,7 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 // import { classToPlain } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Member } from '~/entity/Member';
+import { ValidationApiError } from '~/error';
 // import { Serializer } from 'jsonapi-serializer';
 
 
@@ -25,19 +26,16 @@ router.get('/:id', async (req: Request, res: Response) => {
   return res.json(member);
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   const member = Member.create(req.body);
-  const errors = await validate(member);
-  // const plain = classToPlain(member);
-  if (errors.length > 0) {
-    const err = new Error('Validation Failed');
-    throw err;
-    // res.status(500);
-    // return res.json({ message: 'ERR', member, errors})
+  const valErrs = await validate(member);
+
+  if (valErrs.length > 0) {
+    return next(new ValidationApiError(valErrs));
   }
 
   await member.save();
-  return res.json({ message: 'Test', member, errors})
+  return res.json({ message: 'Test', member, valErrs})
 });
 
 router.delete('/:id', async (req: Request, res: Response) => {
