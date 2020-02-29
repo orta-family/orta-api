@@ -3,44 +3,65 @@ import { ErrorRequestHandler } from "express";
 
 const isDev = ENV === 'development';
 
-interface ApiError {
+interface IApiErrorOptions {
+  detail?: string;
+  source?: any;
+};
+
+interface IApiError {
   status: number;
   title: string;
-  detail?: string;
   expose: boolean;
-  source?: any;
+  options: IApiErrorOptions;
 }
 
-interface PublicApiError {
+interface IApiErrorResponse {
   status: number;
   title: string;
   detail?: string;
   source?: any;
 }
 
-export class ValidationApiError implements ApiError {
-  status: number = 400;
-  title: string = 'Validation Error';
-  expose: boolean = true;
-
-  constructor(public source: any) {
-    this.source = source;
+class ApiError implements IApiError {
+  constructor(
+    public status: number,
+    public title: string,
+    public expose: boolean,
+    public options: IApiErrorOptions = {}
+  ) {
+    this.status = status;
+    this.title = title;
+    this.expose = expose;
+    this.options = options;
   }
 }
 
-class GenericApiError implements PublicApiError {
+export class ValidationApiError extends ApiError {
+  constructor(options: IApiErrorOptions = {}) {
+    super(400, 'Validation Error', true, options);
+  }
+}
+
+export class NotFoundApiError extends ApiError {
+  constructor(options: IApiErrorOptions = {}) {
+    super(404, 'Not found', true, options);
+  }
+}
+
+class GenericApiErrorResponse implements IApiErrorResponse {
   status: number = 500;
   title: string = 'Server Error';
   detail: string = 'An unknown error has ocurred'
 }
 
-function parseError(error: ApiError): PublicApiError {
+function parseError(error: IApiError): IApiErrorResponse {
   if (isDev || error.expose) {
-    const { status, title, detail, source } = error;
+    const { status, title, options } = error;
+    const { detail, source } = options;
     return { status, title, detail, source };
   }
 
-  return new GenericApiError();
+  return new GenericApiErrorResponse();
 }
 
 const errorRequestHandler: ErrorRequestHandler = (error, _req, res, next) => {
@@ -56,7 +77,6 @@ const errorRequestHandler: ErrorRequestHandler = (error, _req, res, next) => {
       },
 
       default: function() {
-        // log the request and respond with 406
         res.status(406).send("Unacceptable!");
       },
     });

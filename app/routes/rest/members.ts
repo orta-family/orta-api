@@ -31,7 +31,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   const valErrs = await validate(member);
 
   if (valErrs.length > 0) {
-    return next(new ValidationApiError(valErrs));
+    return next(new ValidationApiError({ source: valErrs }));
   }
 
   await member.save();
@@ -41,6 +41,9 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 router.delete('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const member = await Member.findOne(id);
+  if (!member) {
+    return
+  }
   member?.remove();
   return res.json(member);
 });
