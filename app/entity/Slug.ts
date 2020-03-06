@@ -1,9 +1,8 @@
 import { BeforeInsert, BeforeUpdate, Column } from 'typeorm';
 import { MinLength } from 'class-validator';
 import slugify from 'slugify';
-import { Base, attributes as baseAttributes } from './Base';
+import { Base } from './Base';
 
-const attributes = [...baseAttributes, 'name', 'slug']
 const slugifyOptions = { lower: true };
 const makeSlug = (str: string) : string => slugify(str, slugifyOptions);
 abstract class Slug extends Base {
@@ -32,4 +31,4 @@ abstract class Slug extends Base {
     }
 }
 
-export { Slug, attributes, makeSlug, slugifyOptions };
+export { Slug, makeSlug, slugifyOptions };

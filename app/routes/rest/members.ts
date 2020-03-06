@@ -1,29 +1,29 @@
-import express, { NextFunction, Request, Response } from 'express';
-// import { classToPlain } from 'class-transformer';
+import express, { NextFunction, Request, Response, response } from 'express';
 import { validate } from 'class-validator';
 import { Member } from '~/entity/Member';
-import { ValidationApiError } from '~/error';
-// import { Serializer } from 'jsonapi-serializer';
-
+import { ValidationApiError, NotFoundApiError } from '~/error';
+import chalk from 'chalk';
 
 const router = express.Router();
+const memberNotFound = new NotFoundApiError({ detail: 'Specified Member was not found' });
+class ApiOkResponse {
+  constructor(public data: any) {
+    this.data = data;
+  }
+};
 
 router.get('/', async (req: Request, res: Response) => {
-  const members = await Member.find();
-  return res.json(members);
-});
+  const { filter } = req.query;
+  let members;
 
-router.get('/:id', async (req: Request, res: Response) => {
-  const { idOrSlug } = req.params;
-  let member;
-
-  if (isNaN(+idOrSlug)) {
-    member = await Member.findBySlug(idOrSlug, 'Member');
+  if (filter) {
+    members = await Member.find({ where: { ...filter } });
   } else {
-    member = await Member.findOne(idOrSlug);
+    members = await Member.find();
   }
 
-  return res.json(member);
+  const data = new ApiOkResponse(members.map(m => m.serialize()));
+  return res.json(data);
 });
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
@@ -34,18 +34,46 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     return next(new ValidationApiError({ source: valErrs }));
   }
 
-  await member.save();
-  return res.json({ message: 'Test', member, valErrs})
+  const result = await member.save().catch(e => new ValidationApiError({ detail: e.detail }));
+
+  if (result instanceof ValidationApiError) {
+    return next(result);
+  }
+
+  const data = new ApiOkResponse(member.serialize());
+  return res.json(data);
 });
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.get('/:idOrSlug', async (req: Request, res: Response, next: NextFunction) => {
+  const { idOrSlug } = req.params;
+  let member;
+
+  if (isNaN(+idOrSlug)) {
+    member = await Member.findBySlug(idOrSlug, 'Member');
+  } else {
+    member = await Member.findOne(idOrSlug);
+  }
+
+  if (!member) {
+    return next(memberNotFound);
+  }
+
+  const data = new ApiOkResponse(member.serialize());
+  return res.json(data);
+});
+
+router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const member = await Member.findOne(id);
+
   if (!member) {
-    return
+    return next(memberNotFound);
   }
-  member?.remove();
-  return res.json(member);
+
+  member.remove();
+
+  const data = new ApiOkResponse(member.serialize());
+  return res.json(data);
 });
 
 
