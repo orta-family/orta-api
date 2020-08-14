@@ -12,6 +12,8 @@ class ApiOkResponse {
 
 class CrudRouter {
   public router: Router;
+  public name: string;
+  public notFoundError: NotFoundApiError;
 
   public readManyRoute: RequestHandler = async (req: Request, res: Response) => {
     const { filter } = req.query;
@@ -85,13 +87,16 @@ class CrudRouter {
 
   constructor(
     public Entity: typeof Base,
-    public entityName?: string, 
-    public notFoundError?: NotFoundApiError,
+    public options: {
+      name?: string, 
+      notFoundError?: NotFoundApiError,
+      readOne?: RequestHandler
+    } = {},
   ) {
     this.Entity = Entity;
-    this.entityName = entityName;
-    this.notFoundError = notFoundError || new NotFoundApiError({
-      detail: `Specified Entity (${entityName}) was not found`
+    this.name = options.name || 'Entity';
+    this.notFoundError = options.notFoundError || new NotFoundApiError({
+      detail: `Specified ${this.name} was not found`
     });
 
     const router = express.Router();
@@ -106,19 +111,19 @@ class CrudRouter {
   }
 }
 
-class SlugCrudRouter extends CrudRouter {
-  public readOne: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+function SlugCrudRouter(router: CrudRouter) : CrudRouter {
+  router.readOne = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     console.log('SLUG SLUG SLUG');
 
     if (isNaN(+id)) {
-      return next(this.notFoundError);
+      return next(router.notFoundError);
     }
 
-    const item = await this.Entity.findOne(id).catch(e => new ValidationApiError({ detail: e.message }));
+    const item = await router.Entity.findOne(id).catch(e => new ValidationApiError({ detail: e.message }));
   
     if (!item) {
-      return next(this.notFoundError);
+      return next(router.notFoundError);
     }
   
     if (item instanceof ValidationApiError) {
@@ -128,14 +133,7 @@ class SlugCrudRouter extends CrudRouter {
     res.locals.item = item;
     return next();
   };
-
-  constructor(
-    Entity: typeof Slug,
-    entityName?: string, 
-    notFoundError?: NotFoundApiError,
-  ) {
-    super(Entity, entityName, notFoundError);
-  }
+  return router;
 }
 
 export { CrudRouter, SlugCrudRouter, ApiOkResponse }

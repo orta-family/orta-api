@@ -1,7 +1,9 @@
 import { Member } from '~/entity/Member';
-import { SlugCrudRouter } from '~/routes/Crud';
+import { SlugCrudRouter, CrudRouter } from '~/routes/Crud';
 
-const memberCrud = new SlugCrudRouter(Member, 'Member');
+const memberCrud = SlugCrudRouter(new CrudRouter(Member, {
+  name: 'Member',
+}));
 
 export default memberCrud.router;
 export { memberCrud };
