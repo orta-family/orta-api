@@ -32,5 +32,4 @@ abstract class Base extends BaseEntity {
     return response;
   }
 }
-
 export { Base };

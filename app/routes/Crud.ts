@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response, Router, RequestHandler } from 'express';
-import { Base } from '~/entity/Base';
 import { Slug } from '~/entity/Slug';
 import { NotFoundApiError, ValidationApiError } from '~/error';
 import { validate } from 'class-validator';
@@ -10,6 +9,12 @@ class ApiOkResponse {
   }
 };
 
+interface ICrudRouterOptions {
+  name?: string,
+  notFoundError?: NotFoundApiError,
+  readOne?: RequestHandler
+}
+
 class CrudRouter {
   public router: Router;
   public name: string;
@@ -18,13 +23,13 @@ class CrudRouter {
   public readManyRoute: RequestHandler = async (req: Request, res: Response) => {
     const { filter } = req.query;
     let collection;
-  
+
     if (filter) {
       collection = await this.Entity.find({ where: { ...filter } });
     } else {
       collection = await this.Entity.find();
     }
-  
+
     const data = new ApiOkResponse(collection.map(e => e.serialize()));
     return res.json(data);
   };
@@ -49,7 +54,6 @@ class CrudRouter {
 
   public readOne: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    console.log('CRUD CRUD CRUD');
 
     if (isNaN(+id)) {
       return next(this.notFoundError);
@@ -85,13 +89,23 @@ class CrudRouter {
     return res.json(data);
   };
 
+  public resetRouter() {
+    const router = express.Router();
+    this.router = router;
+  };
+
+  public initializeRouter() {
+    this.router.get('/', this.readManyRoute);
+    this.router.post('/', this.createRoute);
+
+    this.router.all('/:id', this.readOne);
+    this.router.get('/:id', this.readOneRoute);
+    this.router.delete('/:id', this.deleteRoute);
+  };
+
   constructor(
-    public Entity: typeof Base,
-    public options: {
-      name?: string, 
-      notFoundError?: NotFoundApiError,
-      readOne?: RequestHandler
-    } = {},
+    public Entity: typeof Slug,
+    public options: ICrudRouterOptions = {},
   ) {
     this.Entity = Entity;
     this.name = options.name || 'Entity';
@@ -101,39 +115,47 @@ class CrudRouter {
 
     const router = express.Router();
     this.router = router;
-
-    router.get('/', this.readManyRoute);
-    router.post('/', this.createRoute);
-
-    router.all('/:id', this.readOne);
-    router.get('/:id', this.readOneRoute);
-    router.delete('/:id', this.deleteRoute);
+    this.initializeRouter();
   }
 }
 
-function SlugCrudRouter(router: CrudRouter) : CrudRouter {
-  router.readOne = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    console.log('SLUG SLUG SLUG');
+class SlugCrudRouter {
+  public router: Router;
+  public crud: CrudRouter;
 
-    if (isNaN(+id)) {
-      return next(router.notFoundError);
-    }
+  constructor(
+    public slug: typeof Slug,
+    public options: ICrudRouterOptions = {},
+  ) {
+    this.crud = new CrudRouter(slug, options);
 
-    const item = await router.Entity.findOne(id).catch(e => new ValidationApiError({ detail: e.message }));
-  
-    if (!item) {
-      return next(router.notFoundError);
-    }
-  
-    if (item instanceof ValidationApiError) {
-      return next(item);
-    }
-  
-    res.locals.item = item;
-    return next();
-  };
-  return router;
+    this.crud.readOne = async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = req.params;
+      let item;
+
+      if (isNaN(+id)) {
+        item = await this.crud.Entity.findOne({ slug: id }).catch(e => new ValidationApiError({ detail: e.message }));
+      } else {
+        item = await this.crud.Entity.findOne(id).catch(e => new ValidationApiError({ detail: e.message }));
+      }
+
+      if (!item) {
+        return next(this.crud.notFoundError);
+      }
+
+      if (item instanceof ValidationApiError) {
+        return next(item);
+      }
+
+      res.locals.item = item;
+      return next();
+    };
+
+    this.crud.resetRouter();
+    this.crud.initializeRouter();
+
+    this.router = this.crud.router;
+  }
 }
 
 export { CrudRouter, SlugCrudRouter, ApiOkResponse }
