@@ -1,18 +1,33 @@
 import { PORT } from './config';
-import express from 'express';
+import 'reflect-metadata';
+import { createConnection } from 'typeorm';
+import chalk from 'chalk';
+import * as http from 'http';
 
-const app = express();
+import { createApp } from './app';
 
-const main = async () => {
-  app.use(express.json());
 
-  app.get('/', (req, res) => res.json({ message: 'Test' }));
+async function main() {
+  console.log('Starting Orta API');
 
-  app.use((req, res) => res.status(404).json({ message: 'This is not a valid endpoint' }));
+  console.log('Creating connection to db...');
+  const connection = await createConnection();
+  console.log(chalk.green('Success!'));
 
-  app.listen(PORT, () => {
-    console.log(`Orta API listening on http://localhost:${PORT}`);
-  });
+  const app = createApp();
+  app.set('port', PORT);
+
+  const server = http.createServer(app);
+
+  server.listen(PORT);
+
+  console.log(chalk.green(
+    `${chalk.bold('Orta API')} listening on ${chalk.underline(`http://localhost:${PORT}`)}`
+  ));
 };
 
-main();
+main().catch(e => {
+  console.error(chalk.red('Fatal error occurred starting server!'));
+  console.error(e);
+  process.exit(1);
+});

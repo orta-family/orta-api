@@ -1,0 +1,10 @@
+version: '2.3'
+services:
+  db:
+    image: 'postgres:12'
+    ports:
+      - '${OA_PG_PORT}:5432'
+    environment:
+      - POSTGRES_USER=${OA_PG_USER}
+      - POSTGRES_PASSWORD=${OA_PG_PASS}
+      - POSTGRES_DB=${OA_DB_NAME}
