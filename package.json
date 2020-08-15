@@ -1,5 +1,6 @@
 {
   "name": "orta-api",
+  "private": true,
   "version": "0.1.0",
   "description": "An API for Orta things.",
   "license": "MIT",

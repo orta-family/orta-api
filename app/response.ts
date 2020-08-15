@@ -64,7 +64,7 @@ function parseError(error: IApiError): IApiErrorResponse {
   return new GenericApiErrorResponse();
 }
 
-const errorRequestHandler: ErrorRequestHandler = (error, _req, res, next) => {
+export const errorRequestHandler: ErrorRequestHandler = (error, _req, res, next) => {
   try {
     const parsedError = parseError(error);
 
@@ -85,4 +85,8 @@ const errorRequestHandler: ErrorRequestHandler = (error, _req, res, next) => {
   }
 };
 
-export default errorRequestHandler;
+export class ApiOkResponse {
+  constructor(public data: any) {
+    this.data = data;
+  }
+};
