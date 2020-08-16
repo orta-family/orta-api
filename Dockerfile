@@ -34,8 +34,6 @@ ENV PATH /opt/node_app/app/node_modules/.bin:$PATH
 HEALTHCHECK --interval=30s CMD node healthcheck.js
 
 # copy in our source code last, as it changes the most
-# WORKDIR /opt/node_app/app
-# RUN npm run linkmod
 COPY . .
 RUN npm run build
 
