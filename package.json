@@ -10,7 +10,7 @@
     "clean": "rm -rf ./node_modules && rm -rf ./dist",
     "dev:db:migrate": "npm run orm migration:run",
     "dev:init": "cp ./.env.example ./.env && mkdir -p dist && npm ci",
-    "dev": "trap 'echo;echo; echo Shutting down' INT && npm run dev:db:migrate && tsc-watch --noClear --onSuccess \"node dist/server\";",
+    "dev": "npm run dev:db:migrate && tsc-watch --noClear --onSuccess \"node dist/server\"",
     "lint": "eslint ./app/ --ext .ts",
     "orm": "tsc && typeorm",
     "orm:ts": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
