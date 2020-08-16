@@ -1,5 +1,48 @@
-version: '2.3'
+version: '2.4'
 services:
+  api:
+    build:
+      context: .
+      args:
+        - NODE_ENV=development
+        - OA_PORT=${OA_PORT}
+    environment:
+      - OA_PG_USER=${OA_PG_USER}
+      - OA_PG_PASS=${OA_PG_PASS}
+      - OA_PG_HOST=${OA_PG_HOST}
+      - OA_DB_NAME=${OA_DB_NAME}
+      - OA_PG_URL=${OA_PG_URL}
+    # you can use legacy debug config or new inspect
+    # NOTE: if nodemon isn't restarting on changes, you might be on Windows
+    # which has trouble seeing file changes, so add -L to use legacy polling
+    # https://github.com/remy/nodemon#application-isnt-restarting
+    #command: ../node_modules/.bin/nodemon --debug=0.0.0.0:5858
+    command: npm run dev
+    ports:
+      - '${OA_PORT}:${OA_PORT}'
+      # - '9229:9229'
+      # - '9230:9230'
+    volumes:
+      - .:/opt/node_app/app:delegated
+      # bind-mounting these two files in will let you add packages during development without rebuilding
+      # for example, to add bower to your app while developing, just install it inside the container
+      # and then nodemon will restart. Your changes will last until you 'docker-compose down" and will
+      # be saved on host for next build
+      # NOTE: this won't work on Docker Toolbox (virtualbox) which doesn't bind-mount single files
+      # docker-compose exec node npm install --save bower
+      # - ./package.json:/opt/node_app/package.json
+      # - ./package-lock.json:/opt/node_app/package-lock.json
+
+      # this is a workaround to prevent host node_modules from accidently getting mounted in container
+      # in case you want to use node/npm both outside container for test/lint etc. and also inside container
+      # this will overwrite the default node_modules dir in container so it won't conflict with our
+      # /opt/node_app/node_modules location. Thanks to PR from @brnluiz
+      ## - notused:/opt/node_app/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      disable: true
   db:
     image: 'postgres:12'
     ports:
@@ -8,3 +51,8 @@ services:
       - POSTGRES_USER=${OA_PG_USER}
       - POSTGRES_PASSWORD=${OA_PG_PASS}
       - POSTGRES_DB=${OA_DB_NAME}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${OA_PG_USER} -d ${OA_DB_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
