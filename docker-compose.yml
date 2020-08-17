@@ -3,15 +3,16 @@ services:
   api:
     build:
       context: .
+      network: host
       args:
         - NODE_ENV=development
         - OA_PORT=${OA_PORT}
     environment:
       - OA_PG_USER=${OA_PG_USER}
       - OA_PG_PASS=${OA_PG_PASS}
-      - OA_PG_HOST=${OA_PG_HOST}
+      - OA_PG_HOST=db
+      - OA_PG_PORT=5432
       - OA_DB_NAME=${OA_DB_NAME}
-      - OA_PG_URL=${OA_PG_URL}
     command: npm run dev
     ports:
       - '${OA_PORT}:${OA_PORT}'

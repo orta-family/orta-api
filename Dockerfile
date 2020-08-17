@@ -18,7 +18,9 @@ RUN npm i npm@latest -g
 
 # install dependencies first, in a different location for easier app bind mounting for local development
 # due to default /opt permissions we have to create the dir with root and change perms
-RUN mkdir -p /opt/node_app/app/dist && chown node:node /opt/node_app/app
+RUN mkdir -p /opt/node_app/app/dist
+RUN chown node:node /opt/node_app/app
+RUN chown node:node /opt/node_app/app/dist
 WORKDIR /opt/node_app/app
 
 # the official node image provides an unprivileged user as a security best practice
@@ -27,7 +29,7 @@ WORKDIR /opt/node_app/app
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#non-root-user
 USER node
 COPY package.json package-lock.json* ./
-RUN npm install --no-optional && npm cache clean --force
+RUN npm ci --no-optional && npm cache clean --force
 ENV PATH /opt/node_app/app/node_modules/.bin:$PATH
 
 # check every 30s to ensure this service returns HTTP 200 - DISABLE FOR NOW

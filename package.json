@@ -9,7 +9,7 @@
     "start": "tsc && node dist/server",
     "clean": "rm -rf ./node_modules && rm -rf ./dist",
     "dev:db:migrate": "npm run orm migration:run",
-    "dev:init": "cp ./.env.example ./.env && mkdir -p dist && npm ci",
+    "dev:init": "cp ./.env.example ./.env && npm ci",
     "dev": "npm run dev:db:migrate && tsc-watch --noClear --onSuccess \"node dist/server\"",
     "lint": "eslint ./app/ --ext .ts",
     "orm": "tsc && typeorm",
