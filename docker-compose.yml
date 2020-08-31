@@ -1,5 +1,28 @@
-version: '2.3'
+version: '2.4'
 services:
+  api:
+    build:
+      context: .
+      network: host
+      args:
+        - NODE_ENV=development
+        - OA_PORT=${OA_PORT}
+    environment:
+      - OA_PG_USER=${OA_PG_USER}
+      - OA_PG_PASS=${OA_PG_PASS}
+      - OA_PG_HOST=db
+      - OA_PG_PORT=5432
+      - OA_DB_NAME=${OA_DB_NAME}
+    command: npm run dev
+    ports:
+      - '${OA_PORT}:${OA_PORT}'
+    volumes:
+      - .:/opt/node_app/app:delegated
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      disable: true
   db:
     image: 'postgres:12'
     ports:
@@ -8,3 +31,8 @@ services:
       - POSTGRES_USER=${OA_PG_USER}
       - POSTGRES_PASSWORD=${OA_PG_PASS}
       - POSTGRES_DB=${OA_DB_NAME}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${OA_PG_USER} -d ${OA_DB_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5

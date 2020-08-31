@@ -1,13 +1,7 @@
 import express, { NextFunction, Request, Response, Router, RequestHandler } from 'express';
 import { Slug } from '~/entity/Slug';
-import { NotFoundApiError, ValidationApiError } from '~/error';
+import { ApiOkResponse, NotFoundApiError, ValidationApiError } from '~/response';
 import { validate } from 'class-validator';
-
-class ApiOkResponse {
-  constructor(public data: any) {
-    this.data = data;
-  }
-};
 
 interface ICrudRouterOptions {
   name?: string,
@@ -37,17 +31,17 @@ class CrudRouter {
   public createRoute: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const item = this.Entity.create(req.body);
     const valErrs = await validate(item);
-  
+
     if (valErrs.length > 0) {
       return next(new ValidationApiError({ source: valErrs }));
     }
-  
+
     const result = await item.save().catch(e => new ValidationApiError({ detail: e.detail })); // TODO: Generic error
-  
+
     if (result instanceof ValidationApiError) {
       return next(result);
     }
-  
+
     const data = new ApiOkResponse(item.serialize());
     return res.json(data);
   };
@@ -60,15 +54,15 @@ class CrudRouter {
     }
 
     const item = await this.Entity.findOne(id).catch(e => new ValidationApiError({ detail: e.message }));
-  
+
     if (!item) {
       return next(this.notFoundError);
     }
-  
+
     if (item instanceof ValidationApiError) {
       return next(item);
     }
-  
+
     res.locals.item = item;
     return next();
   };
@@ -82,9 +76,9 @@ class CrudRouter {
 
   public deleteRoute: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const { item } = res.locals;
-  
+
     item.remove();
-  
+
     const data = new ApiOkResponse(item.serialize());
     return res.json(data);
   };
